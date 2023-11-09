@@ -1,68 +1,80 @@
 import { Injectable } from '@nestjs/common';
-
-export interface User {
-  id: number;
-  title: string;
-  content: string;
-  user: string;
-}
-
-// DTO -> data transfer object
-export interface CreateUserDto {
-  title: string;
-  content: string;
-  user: string;
-}
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
+import { CreateUserDto } from './create-user.dto';
+import { UpdateUserDto } from './update-user.dto';
 
 @Injectable()
 export class UserService {
   users: User[] = [];
 
-  getUsers(): User[] {
-    return this.users;
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+
+  async getUsers(): Promise<User[]> {
+    return await this.userRepository.find();
   }
 
-  getUserUser(): string[] {
-    const userUsers: string[] = this.users.map((user: User) => {
-      return user.user;
-    });
+  // getUserUser(): string[] {
+  //   const userUsers: string[] = this.users.map((user: User) => {
+  //     return user.user;
+  //   });
 
-    return userUsers;
-  }
+  //   return userUsers;
+  // }
 
-  getUserTitle(): string[] {
-    const userTitles: string[] = this.users.map((user: User) => {
-      return user.title;
-    });
+  // getUserTitle(): string[] {
+  //   const userTitles: string[] = this.users.map((user: User) => {
+  //     return user.title;
+  //   });
 
-    return userTitles;
-  }
+  //   return userTitles;
+  // }
 
-  createUser(body: CreateUserDto): User {
+  async createUser(body: CreateUserDto): Promise<User> {
     // em sẽ tạo id tăng dần theo số lượng bài user đang có. Ví dụ bài đầu tiên là id 1 ->  id 2
-    const id: number = new Date().getTime();
+    const id: string = new Date().getTime().toString();
 
     const newUser: User = {
-      title: body.title,
-      content: body.content,
-      user: body.user,
+      name: body.name,
+      password: body.password,
+      age: body.age,
       id: id,
     };
 
-    this.users.push(newUser);
+    await this.userRepository.save(newUser);
 
     return newUser;
   }
 
-  deleteUser(id: number): boolean {
-    const newUsers: User[] = this.users.filter((user: User) => {
-      return user.id !== id;
+  async deleteUser(id: string): Promise<boolean> {
+    const deleteUsers = await this.userRepository.find({
+      where: {
+        id: id,
+      },
     });
 
-    const deleteSuccess: boolean = newUsers.length < this.users.length;
+    if (deleteUsers.length > 0) {
+      await this.userRepository.remove(deleteUsers);
+      return true;
+    } else {
+      return false;
+    }
+  }
 
-    this.users = newUsers;
+  async updateUser(id: string, updateData: UpdateUserDto): Promise<User> {
+    const oldData = await this.userRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
 
-    return deleteSuccess;
+    // rest operator -> ...
+    const newData: User = { ...oldData, ...updateData };
+
+    return await this.userRepository.save(newData);
   }
 }

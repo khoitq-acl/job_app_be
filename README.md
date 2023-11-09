@@ -169,3 +169,14 @@ Delete
 - Install docker
 - Install posgress `docker pull postgres`
 - Run posgress `docker run --name postgres -e POSTGRES_PASSWORD=123456789 -e POSTGRES_DB=db_acl_calendar -d -p 5432:5432 postgres`
+
+# Entity
+
+# Repository -> driver để tương tác với entity 
+
+userRepository -> user
+postRepository -> post
+
+
+# Add partial Type
+` npm install @nestjs/mapped-types`
