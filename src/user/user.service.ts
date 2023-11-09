@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto } from './create-user.dto';
 import { UpdateUserDto } from './update-user.dto';
+import { SigninDto } from './signin.dto';
 
 @Injectable()
 export class UserService {
@@ -76,5 +77,23 @@ export class UserService {
     const newData: User = { ...oldData, ...updateData };
 
     return await this.userRepository.save(newData);
+  }
+
+  async signin(signinData: SigninDto): Promise<User> {
+    const userHasSigninId: User = await this.userRepository.findOne({
+      where: {
+        id: signinData.id,
+      },
+    });
+
+    if (!userHasSigninId) {
+      throw new BadRequestException('Tài khoản không tồn tại');
+    }
+
+    if (userHasSigninId.password !== signinData.password) {
+      throw new BadRequestException('Sai mật khẩu');
+    }
+
+    return userHasSigninId;
   }
 }

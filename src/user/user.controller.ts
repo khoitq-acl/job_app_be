@@ -11,6 +11,7 @@ import { UserService } from './user.service';
 import { User } from './user.entity';
 import { CreateUserDto } from './create-user.dto';
 import { UpdateUserDto } from './update-user.dto';
+import { SigninDto } from './signin.dto';
 
 @Controller('user')
 export class UserController {
@@ -56,5 +57,10 @@ export class UserController {
     const id: string = params.id;
     // riêng nút xoá -> http request -> localhost:3000/user/${id}
     return await this.userService.updateUser(id, updateData);
+  }
+
+  @Post('signin')
+  async signin(@Body() body: SigninDto): Promise<User> {
+    return await this.userService.signin(body);
   }
 }
