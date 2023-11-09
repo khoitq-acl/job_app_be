@@ -154,3 +154,18 @@ Update
 Delete
 - Delete
 
+# Database
+
+- Nơi để anh lưu trữ dữ liệu và thao tác với dữ liệu (CURD / xem, thêm , xoá , sửa)
+
+- Là một ứng dụng thứ 3, nó chạy độc lập với app của mình chứ không phải là một phần của app.
+
+- Để cài cũng là một vấn đề => hướng dẫn anh cài bằng docker
+
+
+
+## Database (docker)
+
+- Install docker
+- Install posgress `docker pull postgres`
+- Run posgress `docker run --name postgres -e POSTGRES_PASSWORD=123456789 -e POSTGRES_DB=db_acl_calendar -d -p 5432:5432 postgres`
